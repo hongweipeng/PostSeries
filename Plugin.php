@@ -21,11 +21,18 @@ class PostSeries_Plugin implements Typecho_Plugin_Interface {
 
 
         //Typecho_Plugin::factory('admin/write-post.php')->bottom = array(__CLASS__, 'render');
+        //Typecho_Plugin::factory('admin/write-post.php')->bottom = array(__CLASS__, 'render');
         Helper::addAction('post_series', 'PostSeries_Action');
-        Helper::addPanel(3, 'PostSeries/manage-series.php', '临时面板', '管理专题文章',
+        Helper::addPanel(3, 'PostSeries/manage-series.php', '专题', '管理专题',
             'administrator', false, 'extending.php?panel='.urlencode(trim("PostSeries/series.php", '/')));
-        Helper::addPanel(3, 'PostSeries/series.php', '专题', '管理专题',
+        Helper::addPanel(3, 'PostSeries/series.php', '临时面板', '管理专题名称',
             'administrator', true);
+        Helper::addPanel(3, 'PostSeries/post-series.php', '临时面板', '管理专题文章',
+            'administrator', true);
+
+
+
+
         //Helper::addRoute('post_series_route', __TYPECHO_ADMIN_DIR__.'post-series/series', 'PostSeries_Action', 'series');
     }
 
@@ -64,6 +71,14 @@ class PostSeries_Plugin implements Typecho_Plugin_Interface {
 
 
     public static function render() {
+        $options        = Helper::options();
+        /*$lrjs          = Typecho_Common::url('PostSeries/main.js', $options->pluginUrl);
+        Typecho_Widget::widget('Widget_Contents_Post_Edit')->to($post);
+        include 'MetasSeries.php';
+        Typecho_Widget::widget('MetasSeries')->to($series);*/
+
+
+
 
     }
 }

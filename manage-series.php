@@ -55,7 +55,7 @@ Typecho_Widget::widget('MetasSeries')->to($series);
                                             <a href="<?php $series->permalink(); ?>" title="<?php _e('浏览 %s', $series->name); ?>"><i class="i-exlink"></i></a>
                                         </td>
                                         <td><?php $series->slug(); ?></td>
-                                        <td><a class="balloon-button left size-<?php echo Typecho_Common::splitByCount($series->count, 1, 10, 20, 50, 100); ?>" href="<?php $options->adminUrl('manage-posts.php?category=' . $series->mid); ?>"><?php $series->count(); ?></a></td>
+                                        <td><a class="balloon-button left size-<?php echo Typecho_Common::splitByCount($series->count, 1, 10, 20, 50, 100); ?>" href="<?php $options->adminUrl('extending.php?panel=PostSeries%2Fpost-series.php&mid=' . $series->mid); ?>"><?php $series->count(); ?></a></td>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
@@ -89,7 +89,7 @@ include 'common-js.php';
                         ids.push($(this).val());
                     });
 
-                    $.post('<?php $security->index('/action/post_series?do=sort'); ?>',
+                    $.post('<?php $security->index('/action/post_series/?do=sort'); ?>',
                         $.param({mid : ids}));
 
                     $('tr', table).each(function (i) {

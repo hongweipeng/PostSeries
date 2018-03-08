@@ -298,4 +298,93 @@ class MetasSeries extends Widget_Abstract_Metas {
             $this->response->throwJson(array('success' => 1, 'message' => _t('分类排序已经完成')));
         }
     }
+
+    /**
+     * 合并专题
+     *
+     * @access public
+     * @return void
+     */
+    public function mergeSeries()
+    {
+        /** 验证数据 */
+        $validator = new Typecho_Validate();
+        $validator->addRule('merge', 'required', _t('分类主键不存在'));
+        $validator->addRule('merge', array($this, 'seriesExists'), _t('请选择需要合并的分类'));
+
+        if ($error = $validator->run($this->request->from('merge'))) {
+            $this->widget('Widget_Notice')->set($error, 'error');
+            $this->response->goBack();
+        }
+
+        $mid = $this->request->merge;
+        $contents = $this->request->filter('int')->getArray('cid');
+
+        if ($contents) {
+            //$this->merge($merge, self::$type, $categories);
+            $existsContents = Typecho_Common::arrayFlatten($this->db->fetchAll($this->db
+                ->select('cid')->from('table.relationships')
+                ->where('mid = ?', $mid)), 'cid');
+
+            $diffContents = array_diff($contents, $existsContents);
+            foreach ($diffContents as $content) {
+                $this->db->query($this->db->insert('table.relationships')
+                    ->rows(array('mid' => $mid, 'cid' => $content)));
+                $contents[] = $content;
+            }
+            $num = $this->db->fetchObject($this->db
+                ->select(array('COUNT(mid)' => 'num'))->from('table.relationships')
+                ->where('table.relationships.mid = ?', $mid))->num;
+
+            $this->update(array('count' => $num), $this->db->sql()->where('mid = ?', $mid));
+
+
+            /** 提示信息 */
+            $this->widget('Widget_Notice')->set(_t('分类已经合并'), 'success');
+        } else {
+            $this->widget('Widget_Notice')->set(_t('没有选择任何分类'), 'notice');
+        }
+
+        /** 转向原页 */
+        $this->response->goBack();
+    }
+
+    public function midSeriesPosts() {
+        $mid = $this->request->mid;
+        if (null == $mid) {
+            return array();
+        }
+        $select = Typecho_Widget::widget('Widget_Contents_Post_Admin')->select();
+        $select->join('table.relationships', 'table.contents.cid = table.relationships.cid')
+            ->where('table.relationships.mid = ?', $mid);
+        $result = $this->db->fetchAll($select, array($this, 'push'));
+        return $result;
+    }
+
+    public function midSeries() {
+        $mid = $this->request->mid;
+        if (null == $mid) {
+            return array();
+        }
+        $select = $this->db->select('*')->from('table.metas')->where('mid = ?', $mid);
+        $result = $this->db->fetchAll($select);
+        //var_dump($result);
+        return $result;
+
+    }
+
+    public function removeSeriesCid($mid, $cid) {
+        $this->db->query($this->db->delete('table.relationships')->where('mid = ? AND cid = ?', $mid, $cid));
+        $num = $this->db->fetchObject($this->db
+            ->select(array('COUNT(mid)' => 'num'))->from('table.relationships')
+            ->where('table.relationships.mid = ?', $mid))->num;
+
+        $this->update(array('count' => $num), $this->db->sql()->where('mid = ?', $mid));
+        if (!$this->request->isAjax()) {
+            /** 转向原页 */
+            $this->response->goBack();
+        } else {
+            $this->response->throwJson(array('success' => 1, 'message' => _t('分类排序已经完成')));
+        }
+    }
 }
