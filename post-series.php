@@ -29,7 +29,7 @@ $current_series = Typecho_Widget::widget('MetasSeries')->midSeries();
 
             </div>
             <div class="col-mb-12 col-tb-8">
-                <form method="post">
+                <form method="get">
                     <div class="typecho-list-operate clearfix">
                         <div class="operate">
                             <label><i class="sr-only"><?php _e('全选'); ?></i><input type="checkbox" class="typecho-table-select-all" /></label>
@@ -39,19 +39,18 @@ $current_series = Typecho_Widget::widget('MetasSeries')->midSeries();
                                     <li class="multiline">
                                         <button type="button" class="btn merge btn-s" rel="<?php $security->index('/action/post_series/?do=merge'); ?>"><?php _e('合并到'); ?></button>
                                         <select name="merge">
-                                            <?php $series->parse('<option value="{mid}">{name}</option>'); ?>
+                                            <?php while($series->next()): ?>
+                                                <option value="<?php $series->mid(); ?>"<?php if($request->get('mid') == $series->mid): ?> selected="true"<?php endif; ?>><?php $series->name(); ?></option>
+                                            <?php endwhile; ?>
                                         </select>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                         <div class="search" role="search">
-                            <?php if ('' != $request->keywords || '' != $request->category): ?>
-                                <a href="<?php $options->adminUrl('manage-posts.php'
-                                    . (isset($request->status) || isset($request->uid) ? '?' .
-                                        (isset($request->status) ? 'status=' . htmlspecialchars($request->get('status')) : '') .
-                                        (isset($request->uid) ? '?uid=' . htmlspecialchars($request->get('uid')) : '') : '')); ?>"><?php _e('&laquo; 取消筛选'); ?></a>
-                            <?php endif; ?>
+
+                            <input type="hidden" name="panel" value="<?php _e($request->panel);?>" />
+                            <input type="hidden" name="mid" value="<?php _e($request->mid);?>" />
                             <input type="text" class="text-s" placeholder="<?php _e('请输入关键字'); ?>" value="<?php echo htmlspecialchars($request->keywords); ?>" name="keywords" />
                             <select name="category">
                                 <option value=""><?php _e('所有分类'); ?></option>
@@ -123,6 +122,11 @@ $current_series = Typecho_Widget::widget('MetasSeries')->midSeries();
                             </tbody>
                         </table>
                     </div>
+                    <?php if($posts->have()): ?>
+                        <ul class="typecho-pager">
+                            <?php $posts->pageNav(); ?>
+                        </ul>
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
