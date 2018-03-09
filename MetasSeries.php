@@ -349,15 +349,15 @@ class MetasSeries extends Widget_Abstract_Metas {
         $this->response->goBack();
     }
 
-    public function midSeriesPosts() {
-        $mid = $this->request->mid;
+    public function midSeriesPosts($mid = null) {
+        $mid = $mid == null ? $this->request->mid : $mid;
         if (null == $mid) {
             return array();
         }
         $select = Typecho_Widget::widget('Widget_Contents_Post_Admin')->select();
         $select->join('table.relationships', 'table.contents.cid = table.relationships.cid')
-            ->where('table.relationships.mid = ?', $mid);
-        $result = $this->db->fetchAll($select, array($this, 'push'));
+            ->where('table.relationships.mid = ?', $mid)->order('table.contents.created', Typecho_Db::SORT_ASC);
+        $result = $this->db->fetchAll($select);
         return $result;
     }
 
@@ -387,4 +387,7 @@ class MetasSeries extends Widget_Abstract_Metas {
             $this->response->throwJson(array('success' => 1, 'message' => _t('分类排序已经完成')));
         }
     }
+
+
+
 }
