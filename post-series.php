@@ -37,6 +37,7 @@ $current_series = Typecho_Widget::widget('MetasSeries')->midSeries();
                                 <button class="btn dropdown-toggle btn-s" type="button"><i class="sr-only"><?php _e('操作'); ?></i><?php _e('选中项'); ?> <i class="i-caret-down"></i></button>
                                 <ul class="dropdown-menu">
                                     <li class="multiline">
+                                        <input type="hidden" name="do" value="merge">
                                         <button type="button" class="btn merge btn-s" rel="<?php $security->index('/action/post_series/?do=merge'); ?>"><?php _e('合并到'); ?></button>
                                         <select name="merge">
                                             <?php while($series->next()): ?>
