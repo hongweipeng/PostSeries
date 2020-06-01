@@ -1,4 +1,5 @@
 <?php
+if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 include 'MetasSeries.php';
 class PostSeries_Action extends Typecho_Widget implements Widget_Interface_Do {
 
